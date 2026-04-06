@@ -8,6 +8,8 @@
 
 [functions]
   node_bundler = "esbuild"
+  external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
+  included_files = ["netlify/functions/node_modules/@sparticuz/chromium/bin/**"]
 
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
