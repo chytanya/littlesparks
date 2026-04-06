@@ -52,6 +52,14 @@ export default function SuccessPage() {
                 (Check your spam folder if you don't see it within 2 minutes)
               </p>
 
+              {order?.downloadUrl && (
+                <div className="mb-8">
+                  <a href={order.downloadUrl} className="btn-primary inline-flex">
+                    Download a backup copy
+                  </a>
+                </div>
+              )}
+
               {order && (
                 <div className="bg-white rounded-2xl border-2 border-green-200 p-6 text-left mb-8">
                   <h3 className="font-fredoka text-lg text-gray-800 mb-4">📋 Order Details</h3>

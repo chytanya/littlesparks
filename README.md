@@ -1,6 +1,6 @@
 # ✏️ LittleSparks Prints
 
-Personalized printables for kids K–5. Built with React + Vite, hosted on Netlify, powered by Stripe payments and SendGrid email delivery.
+Personalized printables for kids K–5. Built with React + Vite, hosted on Netlify, powered by Stripe payments, on-demand PDF generation, and SendGrid email delivery.
 
 ---
 
@@ -66,7 +66,11 @@ littlesparks/
 ├── netlify/
 │   └── functions/
 │       ├── create-checkout.js    # POST → creates Stripe Checkout session
-│       ├── stripe-webhook.js     # Stripe event listener → sends email
+│       ├── stripe-webhook.js     # Stripe event listener → generates PDF + sends email
+│       ├── pdf-generator.js      # HTML → PDF renderer with Puppeteer/Chromium
+│       ├── pdf-storage.js        # Blob/local cache abstraction for generated PDFs
+│       ├── pdf-artifact.js       # Stable keys + filenames for reuse
+│       ├── download-pdf.js       # Download endpoint for stored PDFs
 │       ├── get-order.js          # GET → order details for success page
 │       └── package.json          # Function dependencies
 ├── public/
@@ -94,10 +98,14 @@ littlesparks/
 | `STRIPE_PRICE_FLASHCARDS` | Stripe Price ID | Create product in Stripe |
 | `SENDGRID_API_KEY` | SendGrid API key | [SendGrid Dashboard](https://app.sendgrid.com/settings/api_keys) |
 | `SENDGRID_FROM_EMAIL` | Verified sender email | Verify in SendGrid Settings |
-| `PDF_URL_COLORING_BOOK` | Public URL to PDF file | Host on Netlify CDN, S3, or Cloudinary |
-| `PDF_URL_ACTIVITY_WORKBOOK` | Public URL to PDF file | Same |
-| `PDF_URL_HOLIDAY_PACK` | Public URL to PDF file | Same |
-| `PDF_URL_FLASHCARDS` | Public URL to PDF file | Same |
+| `SITE_URL` | Base public site URL | Your Netlify site URL |
+| `PDF_BLOB_STORE` | Netlify Blobs store name for cached PDFs | Any short name, e.g. `generated-pdfs` |
+| `PDF_CACHE_DIR` | Local development cache directory | Optional; defaults to `/tmp/littlesparks-pdfs` |
+| `COLORING_BOOK_IMAGE_MODE` | `template`, `hybrid`, or `ai` | Controls coloring-book generation |
+| `COLORING_BOOK_AI_PAGE_COUNT` | Number of AI pages to attempt | Optional; default `2` |
+| `OPENAI_API_KEY` | Optional OpenAI API key for coloring-page image generation | OpenAI dashboard |
+| `OPENAI_IMAGE_MODEL` | Optional image model name | Default `gpt-image-1` |
+| `OPENAI_IMAGE_SIZE` | Optional image size | Default `1024x1024` |
 | `FAUNA_SECRET` | FaunaDB server key (optional) | [FaunaDB Dashboard](https://dashboard.fauna.com) |
 
 ---
@@ -143,7 +151,7 @@ stripe trigger checkout.session.completed
 3. Create a collection called `orders`
 4. Generate a server key and add to `FAUNA_SECRET`
 
-Orders are automatically stored after each successful payment.
+Orders are automatically stored after each successful payment. When PDF storage is available, the saved order also includes the generated PDF key so the same personalized file can be reused instead of rebuilt.
 
 ---
 
@@ -181,8 +189,8 @@ netlify deploy --prod
 
 1. Add the product object to `src/data/products.js`
 2. Create a Stripe product + price, add the price ID to `.env`
-3. Host the PDF and add the URL to `.env`
-4. The product automatically appears in the shop — no other changes needed
+3. Add the HTML/PDF template rules in [`/Users/chaitu/Sites/littlesparks/netlify/functions/pdf-generator.js`](/Users/chaitu/Sites/littlesparks/netlify/functions/pdf-generator.js)
+4. The product automatically appears in the shop — no static PDF URL needed
 
 ---
 
