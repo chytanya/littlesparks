@@ -78,7 +78,7 @@ exports.handler = async (event) => {
           attachments: [
             {
               filename: pdfAsset.filename,
-              content: pdfAsset.buffer.toString('base64'),
+              content: Buffer.from(pdfAsset.buffer).toString('base64'),
               type: 'application/pdf',
               disposition: 'attachment',
             },
