@@ -5,9 +5,10 @@
 - Add all values from `.env.production.example` to Netlify production environment variables.
 - Use live Stripe keys and live Stripe price IDs.
 - Set `SITE_URL` to the exact production domain.
-- Set `PDF_BLOB_STORE=generated-pdfs`.
+- Set `PDF_BLOB_STORE` only if you want to override the default store name.
 - Start with `COLORING_BOOK_IMAGE_MODE=template`.
 - Leave `OPENAI_API_KEY` blank for initial launch if you want to validate the core flow first.
+- Make sure you replace every placeholder value. Netlify can fail builds if example placeholder values are copied directly into production env vars.
 
 ## 2. Stripe
 

@@ -103,9 +103,9 @@ littlesparks/
 | `STRIPE_PRICE_FLASHCARDS` | Stripe Price ID | Create product in Stripe |
 | `SENDGRID_API_KEY` | SendGrid API key | [SendGrid Dashboard](https://app.sendgrid.com/settings/api_keys) |
 | `SENDGRID_FROM_EMAIL` | Verified sender email | Verify in SendGrid Settings |
-| `SITE_URL` | Base public site URL | Your Netlify site URL |
-| `PDF_BLOB_STORE` | Netlify Blobs store name for cached PDFs | Any short name, e.g. `generated-pdfs` |
-| `PDF_CACHE_DIR` | Local development cache directory | Optional; defaults to `/tmp/littlesparks-pdfs` |
+| `SITE_URL` | Base public site URL | Your actual deployed site URL |
+| `PDF_BLOB_STORE` | Optional override for the blob store name | Leave unset unless you want a custom store name |
+| `PDF_CACHE_DIR` | Optional local development cache directory | Leave unset in Netlify |
 | `DOWNLOAD_TOKEN_SECRET` | Secret used to sign customer-specific download links | Generate a long random secret |
 | `COLORING_BOOK_IMAGE_MODE` | `template`, `hybrid`, or `ai` | Controls coloring-book generation |
 | `COLORING_BOOK_AI_PAGE_COUNT` | Number of AI pages to attempt | Optional; default `2` |
@@ -121,6 +121,7 @@ littlesparks/
 For launch, start with the core payment and delivery flow first:
 
 1. Set live Stripe, SendGrid, `SITE_URL`, and `PDF_BLOB_STORE` variables.
+Do not copy placeholder values from the example env files directly into Netlify. Use real values for your site and secrets.
 2. Launch with `COLORING_BOOK_IMAGE_MODE=template`.
 3. Validate payment → webhook → PDF generation → email attachment → backup download.
 4. After that flow is stable, add `OPENAI_API_KEY` and switch to `COLORING_BOOK_IMAGE_MODE=hybrid`.
