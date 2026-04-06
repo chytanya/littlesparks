@@ -1,8 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const sgMail = require('@sendgrid/mail')
 
+const { generateDownloadToken } = require('./download-token')
 const { buildEmailHtml, buildEmailText } = require('./email-helper')
 const { getOrCreatePdf } = require('./pdf-generator')
+const { buildDownloadUrl } = require('./pdf-storage')
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -43,6 +45,15 @@ exports.handler = async (event) => {
 
     if (email && pdfAsset?.buffer) {
       try {
+        const downloadToken = pdfAsset.storage === 'blob'
+          ? generateDownloadToken({
+              key: pdfAsset.key,
+              childName,
+              productSlug,
+            })
+          : ''
+        const downloadUrl = buildDownloadUrl(pdfAsset.key, downloadToken, event.headers)
+
         await sgMail.send({
           to: email,
           from: {
@@ -53,14 +64,14 @@ exports.handler = async (event) => {
           html: buildEmailHtml({
             childName,
             productName,
-            pdfUrl: pdfAsset.downloadUrl,
+            pdfUrl: downloadUrl,
             option,
             hasAttachment: true,
           }),
           text: buildEmailText({
             childName,
             productName,
-            pdfUrl: pdfAsset.downloadUrl,
+            pdfUrl: downloadUrl,
             option,
             hasAttachment: true,
           }),

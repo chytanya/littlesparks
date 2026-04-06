@@ -19,9 +19,10 @@ function resolveSiteBaseUrl(headers = {}) {
   return host ? `${proto}://${host}` : ''
 }
 
-function buildDownloadUrl(key, headers = {}) {
+function buildDownloadUrl(key, token, headers = {}) {
   const baseUrl = resolveSiteBaseUrl(headers)
-  return baseUrl ? `${baseUrl}/.netlify/functions/download-pdf?key=${encodeURIComponent(key)}` : ''
+  if (!baseUrl || !token) return ''
+  return `${baseUrl}/.netlify/functions/download-pdf?key=${encodeURIComponent(key)}&token=${encodeURIComponent(token)}`
 }
 
 function getLocalPath(key) {

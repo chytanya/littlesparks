@@ -42,23 +42,11 @@ export default function SuccessPage() {
               </h1>
 
               <p className="text-gray-600 text-lg mb-2">
-                {order?.email ? (
-                  <>Check <strong>{order.email}</strong> — your printable is being sent right now.</>
-                ) : (
-                  'Check your inbox — your printable is being sent right now.'
-                )}
+                Check your inbox — your printable is being sent right now.
               </p>
               <p className="text-sm text-gray-400 mb-8">
                 (Check your spam folder if you don't see it within 2 minutes)
               </p>
-
-              {order?.downloadUrl && (
-                <div className="mb-8">
-                  <a href={order.downloadUrl} className="btn-primary inline-flex">
-                    Download a backup copy
-                  </a>
-                </div>
-              )}
 
               {order && (
                 <div className="bg-white rounded-2xl border-2 border-green-200 p-6 text-left mb-8">

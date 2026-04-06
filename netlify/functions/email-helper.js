@@ -1,8 +1,17 @@
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 function buildEmailHtml(data) {
-  var childName = data.childName
-  var productName = data.productName
+  var childName = escapeHtml(data.childName)
+  var productName = escapeHtml(data.productName)
   var pdfUrl = data.pdfUrl
-  var option = data.option
+  var option = escapeHtml(data.option)
   var hasAttachment = data.hasAttachment
   var optionLine = option
     ? '<p style="margin:0 0 8px 0;color:#666;font-size:14px;">Selected: <strong>' + option + '</strong></p>'
@@ -39,10 +48,10 @@ function buildEmailHtml(data) {
 }
 
 function buildEmailText(data) {
-  var childName = data.childName
-  var productName = data.productName
+  var childName = String(data.childName || '')
+  var productName = String(data.productName || '')
   var pdfUrl = data.pdfUrl
-  var option = data.option
+  var option = String(data.option || '')
   var hasAttachment = data.hasAttachment
   return [
     'Hi,',

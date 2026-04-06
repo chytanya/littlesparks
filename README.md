@@ -32,12 +32,15 @@ npm run dev
 # → http://localhost:3000
 ```
 
-**Option B — Full stack** with Netlify Functions (recommended):
+**Option B — Frontend + Netlify Functions (recommended for local work):**
 ```bash
 npm install -g netlify-cli
-netlify dev
-# → http://localhost:8888
+npm run dev:netlify
+# → app at http://127.0.0.1:3000
+# → functions served through /.netlify/functions/*
 ```
+
+If you run `netlify dev` directly, it uses the local `[dev]` block in [`/Users/chaitu/Sites/littlesparks/netlify.toml`](/Users/chaitu/Sites/littlesparks/netlify.toml) and serves the built app rather than the Vite dev server. For day-to-day development, `npm run dev:netlify` is the intended workflow.
 
 ---
 
@@ -80,7 +83,9 @@ littlesparks/
 ├── netlify.toml                  # Netlify build + redirect config
 ├── vite.config.js
 ├── tailwind.config.js
-└── .env.example
+├── .env.example
+├── .env.production.example
+└── LAUNCH_CHECKLIST.md
 ```
 
 ---
@@ -101,12 +106,29 @@ littlesparks/
 | `SITE_URL` | Base public site URL | Your Netlify site URL |
 | `PDF_BLOB_STORE` | Netlify Blobs store name for cached PDFs | Any short name, e.g. `generated-pdfs` |
 | `PDF_CACHE_DIR` | Local development cache directory | Optional; defaults to `/tmp/littlesparks-pdfs` |
+| `DOWNLOAD_TOKEN_SECRET` | Secret used to sign customer-specific download links | Generate a long random secret |
 | `COLORING_BOOK_IMAGE_MODE` | `template`, `hybrid`, or `ai` | Controls coloring-book generation |
 | `COLORING_BOOK_AI_PAGE_COUNT` | Number of AI pages to attempt | Optional; default `2` |
 | `OPENAI_API_KEY` | Optional OpenAI API key for coloring-page image generation | OpenAI dashboard |
 | `OPENAI_IMAGE_MODEL` | Optional image model name | Default `gpt-image-1` |
 | `OPENAI_IMAGE_SIZE` | Optional image size | Default `1024x1024` |
 | `FAUNA_SECRET` | FaunaDB server key (optional) | [FaunaDB Dashboard](https://dashboard.fauna.com) |
+
+---
+
+## 🚀 Production Rollout
+
+For launch, start with the core payment and delivery flow first:
+
+1. Set live Stripe, SendGrid, `SITE_URL`, and `PDF_BLOB_STORE` variables.
+2. Launch with `COLORING_BOOK_IMAGE_MODE=template`.
+3. Validate payment → webhook → PDF generation → email attachment → backup download.
+4. After that flow is stable, add `OPENAI_API_KEY` and switch to `COLORING_BOOK_IMAGE_MODE=hybrid`.
+
+Use:
+
+- [`.env.production.example`](/Users/chaitu/Sites/littlesparks/.env.production.example) for the production env variable set
+- [`LAUNCH_CHECKLIST.md`](/Users/chaitu/Sites/littlesparks/LAUNCH_CHECKLIST.md) for the production launch checklist
 
 ---
 

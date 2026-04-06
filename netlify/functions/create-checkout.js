@@ -29,21 +29,71 @@ const FALLBACK_PRICES = {
   'bundle':                            1900,
 }
 
+function normalizeOrigin(value) {
+  return String(value || '').replace(/\/$/, '')
+}
+
+function parseOrigin(value) {
+  try {
+    return normalizeOrigin(new URL(String(value || '')).origin)
+  } catch (error) {
+    return ''
+  }
+}
+
+function isLocalOrigin(value) {
+  return /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(value)
+}
+
+function buildSiteUrl(headers = {}) {
+  const requestOrigin = parseOrigin(headers.origin || headers.Origin)
+  if (requestOrigin && isLocalOrigin(requestOrigin)) {
+    return requestOrigin
+  }
+
+  const configured = normalizeOrigin(process.env.SITE_URL)
+  if (configured) return configured
+
+  const proto = headers['x-forwarded-proto'] || headers['X-Forwarded-Proto'] || 'https'
+  const host = requestOrigin
+    ? new URL(requestOrigin).host
+    : (headers['x-forwarded-host'] || headers.host || headers.Host || '')
+
+  return host ? `${proto}://${host}` : ''
+}
+
+function isAllowedOrigin(headers = {}) {
+  const origin = parseOrigin(headers.origin || headers.Origin)
+  if (!origin) return true
+
+  const siteUrl = buildSiteUrl(headers)
+  return origin === normalizeOrigin(siteUrl)
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) }
   }
 
   try {
-    const { productSlug, childName, option, email, successUrl, cancelUrl } = JSON.parse(event.body)
+    const { productSlug, childName, option, email } = JSON.parse(event.body)
 
     if (!productSlug || !childName || !email) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) }
     }
 
+    if (!isAllowedOrigin(event.headers)) {
+      return { statusCode: 403, body: JSON.stringify({ error: 'Invalid request origin' }) }
+    }
+
     const productName = PRODUCT_NAMES[productSlug]
     if (!productName) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Invalid product' }) }
+    }
+
+    const siteUrl = buildSiteUrl(event.headers)
+    if (!siteUrl) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Could not determine site URL' }) }
     }
 
     const priceId      = PRICE_MAP[productSlug]
@@ -75,8 +125,8 @@ exports.handler = async (event) => {
         option:      option || '',
         productName,
       },
-      success_url: successUrl,
-      cancel_url:  cancelUrl,
+      success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${siteUrl}/checkout`,
       // Collect billing address for tax purposes (optional)
       billing_address_collection: 'auto',
     })

@@ -490,7 +490,7 @@ async function getOrCreatePdf(personalization, headers = {}) {
       buffer: cached.buffer,
       cached: true,
       storage: cached.storage,
-      downloadUrl: cached.storage === 'blob' ? buildDownloadUrl(artifact.key, headers) : '',
+      downloadUrl: '',
     }
   }
 
@@ -503,7 +503,7 @@ async function getOrCreatePdf(personalization, headers = {}) {
     buffer,
     cached: false,
     storage: stored.storage,
-    downloadUrl: stored.storage === 'blob' ? buildDownloadUrl(artifact.key, headers) : '',
+    downloadUrl: '',
   }
 }
 
