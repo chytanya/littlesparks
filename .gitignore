@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+netlify/functions/node_modules/
+
+# Build output
+dist/
+.netlify/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Netlify
+.netlify
