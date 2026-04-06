@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Nunito', sans-serif; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-candy-pink text-white font-bold py-3 px-8 rounded-full font-nunito
+           shadow-[0_4px_0_#c94a7b] hover:shadow-[0_6px_0_#c94a7b]
+           hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#c94a7b]
+           transition-all duration-150 cursor-pointer inline-block;
+  }
+  .btn-secondary {
+    @apply bg-white text-candy-purple border-2 border-candy-purple font-bold py-3 px-8
+           rounded-full font-nunito hover:bg-purple-50 hover:-translate-y-1
+           transition-all duration-150 cursor-pointer inline-block;
+  }
+  .btn-white {
+    @apply bg-white text-candy-purple font-bold py-3 px-8 rounded-full font-nunito
+           shadow-[0_4px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_rgba(0,0,0,0.2)]
+           hover:-translate-y-1 transition-all duration-150 cursor-pointer inline-block;
+  }
+  .section-title {
+    @apply font-fredoka text-4xl text-gray-800 text-center mb-2;
+  }
+  .section-sub {
+    @apply text-center text-gray-500 text-lg mb-12;
+  }
+  .card {
+    @apply bg-white rounded-2xl border-2 border-purple-100 overflow-hidden
+           transition-all duration-200 hover:-translate-y-2
+           hover:shadow-xl cursor-pointer;
+  }
+}
+
+/* Dashed divider */
+.dashed-divider {
+  border-top: 2px dashed #FFD6E7;
+}
+
+/* Floating shape animation */
+.floating { animation: float 6s ease-in-out infinite; }
+.floating-delay { animation: float 6s ease-in-out 2s infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+
+/* Fade up on scroll */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Toast */
+.toast-enter { transform: translateY(80px); opacity: 0; }
+.toast-visible { transform: translateY(0); opacity: 1; transition: all 0.4s ease; }
